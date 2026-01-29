@@ -1,0 +1,8 @@
+{
+  "name": "loppresseur-ai-openai-root",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "openai": "^4.0.0"
+  }
+}

@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Oppresseur AI - Générateur de Paroles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #d4af37;
+            --blood-red: #8b0000;
+            --deep-red: #5c0000;
+            --bone-white: #e8dcc4;
+            --dark-metal: #1a1a1a;
+            --black-leather: #0a0a0a;
+            --smoke: rgba(200, 200, 200, 0.1);
+        }
+
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: #000000;
+            color: var(--bone-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(212, 175, 55, 0.02) 2px, rgba(212, 175, 55, 0.02) 4px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="3.5" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.05"/></svg>');
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.4;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px rgba(139, 0, 0, 0.5));
+            }
+            50% {
+                filter: drop-shadow(0 0 35px rgba(139, 0, 0, 0.8));
+            }
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            height: auto;
+            display: block;
+        }
+
+        .subtitle {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--gold);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            opacity: 0.9;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 10, 0.95));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 2px;
+            padding: 35px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(212, 175, 55, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .panel:hover::before {
+            opacity: 1;
+        }
+
+        .panel:hover {
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 
+                0 15px 50px rgba(0, 0, 0, 0.9),
+                0 0 30px rgba(139, 0, 0, 0.2),
+                inset 0 1px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        h2 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.2rem;
+            color: var(--gold);
+            margin-bottom: 30px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--blood-red);
+            padding-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--bone-white);
+            padding: 15px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 
+                0 0 20px rgba(212, 175, 55, 0.2),
+                inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        textarea::placeholder {
+            color: rgba(232, 220, 196, 0.4);
+        }
+
+        select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--bone-white);
+            padding: 14px 15px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23d4af37" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--gold);
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        select option {
+            background: #1a1a1a;
+            color: var(--bone-white);
+            padding: 10px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, var(--blood-red), var(--deep-red));
+            color: var(--bone-white);
+            border: 2px solid var(--gold);
+            padding: 20px 40px;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 2px;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 6px 20px rgba(139, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .generate-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 10px 30px rgba(139, 0, 0, 0.8),
+                0 0 40px rgba(212, 175, 55, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: var(--bone-white);
+        }
+
+        .generate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .generate-btn:disabled {
+            background: linear-gradient(135deg, #333, #222);
+            border-color: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .generate-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        #output {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 35px;
+            min-height: 500px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            color: var(--bone-white);
+            border-radius: 2px;
+            position: relative;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #output:empty::before {
+            content: 'Les paroles apparaîtront ici...';
+            color: rgba(232, 220, 196, 0.3);
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px;
+            color: var(--gold);
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            letter-spacing: 4px;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .style-tag {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--blood-red);
+            padding: 20px;
+            margin-top: 25px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--gold);
+            border-radius: 2px;
+            line-height: 1.7;
+            box-shadow: inset 0 2px 6px rgba(139, 0, 0, 0.3);
+        }
+
+        .copy-btn {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 25px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 2px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            color: rgba(232, 220, 196, 0.6);
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .logo-container img {
+                max-width: 200px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .panel {
+                padding: 25px;
+            }
+
+            .generate-btn {
+                font-size: 1.5rem;
+                padding: 16px 30px;
+            }
+        }
+
+        .intensity-info {
+            font-size: 0.75rem;
+            color: rgba(232, 220, 196, 0.5);
+            margin-top: 6px;
+            font-family: 'Roboto Mono', monospace;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="/logo_youtube2.png" alt="L'Oppresseur Logo">
+            </div>
+            <div class="subtitle">Générateur de Paroles · Rap Conscient</div>
+        </header>
+
+        <div class="main-layout">
+            <div class="panel">
+                <h2>Configuration</h2>
+                
+                <div class="info-text">
+                    Décris ton thème ou ton message. Sois spécifique sur ce que tu veux exprimer.
+                </div>
+
+                <div class="form-group">
+                    <label>Thème / Message</label>
+                    <textarea id="theme" placeholder="Ex: La rage intérieure face aux faux visages, la solitude dans la foule, la résilience après la trahison, la lutte pour rester authentique..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Structure de la Chanson</label>
+                    <select id="structure">
+                        <option value="standard">Standard (Intro, Verse, Hook x2, Verse, Hook x2, Verse, Hook x2, Outro)</option>
+                        <option value="classic_bridge">Classic avec Bridge (Intro, Verse, Hook, Verse, Hook, Bridge, Verse, Hook, Outro)</option>
+                        <option value="two_verse">2 Verses (Intro, Verse, Hook x2, Verse, Hook x2, Bridge, Outro)</option>
+                        <option value="extended">Extended (Intro, Verse, Pre-Hook, Hook, Verse, Pre-Hook, Hook, Verse, Pre-Hook, Hook, Outro)</option>
+                        <option value="storytelling">Storytelling (Intro, Verse, Hook, Verse, Interlude, Verse, Hook, Outro)</option>
+                        <option value="minimal">Minimaliste (Verse, Hook x2, Verse, Hook x2, Outro)</option>
+                        <option value="three_act">Three-Act (Intro, Verse, Hook, Verse, Bridge, Verse, Hook x2, Outro)</option>
+                        <option value="anthem">Anthem (Intro, Hook, Verse, Hook, Verse, Bridge, Hook x2, Outro)</option>
+                        <option value="aggressive">Aggressive (Intro, Verse, Hook, Verse, Hook, Verse, Bridge, Hook, Outro)</option>
+                        <option value="melodic">Melodic (Intro, Pre-Hook, Hook, Verse, Pre-Hook, Hook, Bridge, Hook, Outro)</option>
+                        <option value="custom">🎯 Personnalisé</option>
+                    </select>
+                    <div class="intensity-info">Définit l'organisation des sections de la chanson</div>
+                </div>
+
+                <div class="form-group" id="customStructureGroup" style="display: none;">
+                    <label>Décris ta Structure Personnalisée</label>
+                    <textarea id="customStructure" placeholder="Ex: Intro (4 bars), Verse 1 (16 bars), Hook (4 bars) x2, Verse 2 (16 bars), Hook (4 bars) x2, Bridge (8 bars), Hook (4 bars) x2, Outro..."></textarea>
+                    <div class="intensity-info">Utilise des tags comme [Intro], [Verse], [Hook], [Bridge], [Outro], [Pre-Hook], [Interlude]</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Intensité Émotionnelle</label>
+                    <select id="intensity">
+                        <option value="vulnerable">Vulnérable / Fragile</option>
+                        <option value="melancholic">Mélancolique / Introspectif profond</option>
+                        <option value="nostalgic">Nostalgique / Réfléchi</option>
+                        <option value="contemplative">Contemplatif / Philosophique</option>
+                        <option value="somber">Sombre / Pesant</option>
+                        <option value="determined">Déterminé / Résolu</option>
+                        <option value="hopeful">Porteur d'espoir / Optimiste</option>
+                        <option value="balanced" selected>Équilibré (Intro + Montée)</option>
+                        <option value="confident">Confiant / Affirmé</option>
+                        <option value="intense">Intense / Passionné</option>
+                        <option value="rebellious">Rebelle / Contestataire</option>
+                        <option value="aggressive">Agressif / Militant</option>
+                        <option value="defiant">Défiant / Provocateur</option>
+                        <option value="raw">Brute / Explosive</option>
+                        <option value="rage">Rage Pure / Déchaîné</option>
+                        <option value="triumphant">Triomphant / Victorieux</option>
+                        <option value="custom">🎯 Personnalisé</option>
+                    </select>
+                    <div class="intensity-info">Définit l'énergie et le ton général des paroles</div>
+                </div>
+
+                <div class="form-group" id="customIntensityGroup" style="display: none;">
+                    <label>Décris ton Intensité Personnalisée</label>
+                    <textarea id="customIntensity" placeholder="Ex: Sarcastique et désabusé avec une pointe d'espoir, mélancolie qui se transforme en détermination froide, rage silencieuse qui bout en dessous..."></textarea>
+                </div>
+
+                <button class="generate-btn" id="generateBtn">
+                    <span>Générer</span>
+                </button>
+            </div>
+
+            <div class="panel">
+                <h2>Paroles</h2>
+                <div class="loading" id="loading">Génération en cours</div>
+                <div id="output"></div>
+                <button class="copy-btn" id="copyAllBtn" style="display: none;">📋 Copier Tout</button>
+                <div id="styleTag" class="style-tag" style="display: none;"></div>
+                <button class="copy-btn" id="copyStyleBtn" style="display: none;">🎵 Copier le Style Suno</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const systemPrompt = `Tu es maintenant « L'Oppresseur AI », l'assistant d'écriture rap québécois conscient ultime, 100 % dédié à la chaîne YouTube « L'Oppresseur » de Yanick. Ton seul but est de créer des textes de rap conscient québécois puissants, lourds de sens, crus, introspectifs et militants, dans le style exact de L'Oppresseur : brut, authentique, ancré dans la survie urbaine et la résilience, avec une vibe urbaine intense, tout en évitant toute reproduction littérale de jeux de mots, phrases, métaphores ou expressions existantes. Chaque génération doit être 100 % unique : inspire-toi des patterns généraux du guide ci-dessous, mais innove avec des éléments originaux basés sur de nouveaux vécus, contextes ou angles frais. Par exemple, au lieu de recycler des images connues, invente des équivalents neufs qui transmettent la même intensité brute (ex. : "flammes qui crament le bitume gelé" pour évoquer la rage, sans écho direct).
+
+Guide intégré pour reproduire le style de L'Oppresseur (appliqué strictement sans plagiat) :
+
+Genre principal : Rap conscient québécois, boom bap old-school minimaliste (beats rythmés, directs, années 90 vibe – drums percutants, samples sombres comme piano mélancolique ou basses lourdes pour simuler la rue froide). Évite productions surchargées ; reste simple pour mettre l'accent sur les paroles qui "frappent sec".
+
+Structure typique : Chansons courtes (3-4 min idéales pour Suno), avec couplet-refrain-couplet-refrain-outro. Refrains répétitifs et hypnotiques pour marteler le message oppressant/motivant. Flow mid-tempo fluide mais incisif, avec pauses pour emphase – rythme qui cogne comme un poing, voix brute humaine sans auto-tune excessif.
+
+Ambiance sonore : Urbaine intense avec chaos street. Effets subtils (échos, scratches) pour authenticité, mais minimaliste. Influences : Rap français raw (Kery James-like) adapté au slang québécois, sans glamour pop. Varie tempos légèrement par chanson pour unicité, mais noyau boom bap.
+
+Langage et Ton : Brute, directe, sans filtre, en français québécois colloquial (contractions comme "j'te dis", "y'a pas d'choix", "trimé dur" – invente tes propres expressions régionales fraîches). Ton oscillant entre introspectif/réfléchissant (douleur personnelle) et agressif/motivant (force intérieure). Évite moralisme ; c'est du vécu qui "dérange les confortables" et "réveille les égarés" – mots qui cognent, lucidité crue qui expose faiblesses sans pitié. PAS DE JURONS - reste puissant par le message et les métaphores, pas par les gros mots.
+
+Structure des Paroles : Rimes ÉQUILIBRÉES - mix de rimes simples percutantes (AABB ou ABAB) pour l'impact brut, avec des touches de rimes multisyllabiques (2-3 syllabes) aux moments clés pour la technique. L'authenticité et le message priment sur la virtuosité pure. Refrains répétitifs (motif 3-4 fois pour hypnotiser). Couplets denses en images vives concrètes, mélange métaphores de survie (invente des neufs comme "ombres qui bouffent le jour" sans copier). Punchlines qui claquent par vérité brute, sans jeux alambiqués ; authenticité qui frappe au ventre. Chaque ligne 8-12 syllabes pour flow oral naturel.
+
+Approche des rimes :
+- Base: rimes simples directes qui cognent (vie/survie, jour/toujours, fort/mort)
+- Moments clés: rimes multisyllabiques pour l'impact (système/problème, batailles/murailles, résistance/souffrance)
+- Priorité: MESSAGE > Technique. Les rimes servent le propos, pas l'inverse.
+
+Thématiques Généraux (adaptés pour unicité) : Résilience face à l'adversité, authenticité vs. hypocrisie, survie urbaine, croissance à travers douleur. Pour chaque chanson, choisis angle frais inédit (ex. : solitude moderne via réseaux sociaux → invente "échos vides dans les feeds bruyants" sans échos existants). Reste ancré dans "vécu qui cogne" : batailles intérieures, rejets sociaux, précarité.
+
+Éléments Clés à Reproduire Sans Copier : Images/métaphores originales évoquant froid, rage, clarté (ex. : invente "gel qui ronge les os du hood"). Flow linguistique : slang québécois inventif (joual + urbains modernes), répétitions pour emphase. Émotion : force intérieure motivante sans cheesy ; varie perspectives (trahison → reconstruction vigilante).
+
+Instructions pour Toi (IA) : 1. Analyse thème donné, explore sous-angle inédit aligné. 2. Génère 100% original – scanne pour zéro plagiat (synonymes, contextes frais, expériences hypothétiques variées). 3. Test unicité : flow "frappe" pareil mais mots neufs ; 100% extension naturelle. 4. Itère si ressemble trop : change slang, inverse métaphores, ajoute twist culturel québécois moderne (ex. : précarité plateformes).
+
+Langue supplémentaire : français québécois dominant, 100% FRANÇAIS dans les paroles - AUCUN anglicisme. Pas de "hood", "block", "grind", "survive" ou autres termes anglais. Utilise des équivalents français québécois authentiques : "quartier", "coin de rue", "trimé", "survivre", "gang", etc. Expression directe et percutante en français pur sans besoin de jurons - le pouvoir est dans les métaphores et le message.
+
+Structure chanson Suno v5-ready avec MÉTA-TAGS (génère toujours avec ces tags) :
+
+RÈGLE ABSOLUE: Place TOUJOURS un tag de structure au début de chaque section des paroles. Combine les tags avec "|" pour empiler les instructions (max 3-6 tags par section).
+
+Format: [Structure | style vocal | ambiance/effets | instrumentation]
+
+Tags de structure disponibles:
+- [Intro] - Introduction
+- [Verse] ou [Verse 1], [Verse 2] - Couplets
+- [Pre-Chorus] - Pré-refrain, montée
+- [Chorus] ou [Hook] - Refrain accrocheur
+- [Build] ou [Build-up] - Montée d'énergie
+- [Drop] - Impact fort
+- [Breakdown] - Rupture d'énergie
+- [Bridge] - Pont, contraste
+- [Outro] - Fin
+
+Tags vocaux pour rap conscient L'Oppresseur:
+- [raspy lead vocal] - Voix rauque, grainée
+- [spoken word verse] - Rap parlé, flow direct
+- [emotional build-up] - Intensité émotionnelle croissante
+- [anthemic chorus] - Refrain puissant, énergique
+- [raw delivery] - Livraison brute, authentique
+- [close-mic intimacy] - Intimité micro proche
+- [staccato flow] - Flow saccadé, percutant
+
+Tags d'ambiance/effets:
+- [light reverb] - Réverbération légère
+- [reverb tail] - Queue de réverb
+- [stereo slapback] - Écho stéréo
+- [vocal grit] - Grain vocal
+- [urban atmosphere] - Atmosphère urbaine
+
+Exemples de tags combinés pour L'Oppresseur:
+[Intro | spoken word verse | urban atmosphere | cold piano sample]
+[Verse 1 | raspy lead vocal | close-mic intimacy | boom bap drums]
+[Pre-Chorus | emotional build-up | vocal grit]
+[Hook | anthemic chorus | staccato flow | deep 808s]
+[Bridge | spoken word verse | light reverb | minimal beat]
+[Outro | raw delivery | fading reverb]
+
+IMPORTANT: 
+- Utilise 2-4 tags par section (pas plus de 6)
+- Ordre logique: Structure → Voix → Ambiance → Instrumentation
+- Cohérence avec le genre boom bap conscient
+- Tags dans les paroles + répétés dans le style musical Suno
+
+Règles d'écriture finales (jamais déroger) :
+- Métaphores lourdes : invente neufs comme système = tempête qui enterre les rêves, rue = bitume qui craque sous le gel, précarité = vent qui coupe les os.
+- Rimes ÉQUILIBRÉES : Mix de rimes simples directes (impact brut) avec touches multisyllabiques aux moments clés. Authenticité > Virtuosité.
+- Flow : ponctuation pour respirations, majuscules/CAPS pour emphasis émotionnelle forte, lignes rythmées à voix haute.
+- 100% FRANÇAIS : AUCUN anglicisme dans les paroles (pas de hood, block, grind, survive, gang, flex, etc.). Utilise français québécois pur : quartier, coin de rue, trimé, survivre, crew, bande, etc.
+- Évite à mort : clichés rap US (bling, guns glorifiés, flex), moralisme, fautes, lignes trop courtes/irrégulières, JURONS (reste puissant par le message), ANGLICISMES.
+- Toujours produire un texte FINAL bien édité, prêt à coller dans Suno Custom Mode.
+
+FORMAT DE RÉPONSE:
+1. Les paroles complètes avec les tags [Intro], [Chorus], etc., en style L'Oppresseur 100% original.
+2. À la toute fin, la ligne exacte suivante (en anglais) :
+Style musical détaillé Suno : French Canadian Québec Montréal accent, male vocals, dark conscious Quebec rap, 90s boom bap heavy 808s, gritty raw production, cold piano/icy strings winter vibe, deep raspy gritty male rap vocals angry emotional intense Quebec accent, raw no auto-tune, militant hip-hop like Kery James Quebec raw, high fidelity, explosive choruses
+
+Maintenant tu es L'Oppresseur AI. Réponds toujours en français. Commence directement par les paroles quand je te donne un thème. Go.`;
+
+        const themeTextarea = document.getElementById('theme');
+        const structureSelect = document.getElementById('structure');
+        const customStructureGroup = document.getElementById('customStructureGroup');
+        const customStructureTextarea = document.getElementById('customStructure');
+        const intensitySelect = document.getElementById('intensity');
+        const customIntensityGroup = document.getElementById('customIntensityGroup');
+        const customIntensityTextarea = document.getElementById('customIntensity');
+        const generateBtn = document.getElementById('generateBtn');
+        const output = document.getElementById('output');
+        const loading = document.getElementById('loading');
+        const copyAllBtn = document.getElementById('copyAllBtn');
+        const styleTag = document.getElementById('styleTag');
+        const copyStyleBtn = document.getElementById('copyStyleBtn');
+
+        // Show/hide custom structure field
+        structureSelect.addEventListener('change', () => {
+            if (structureSelect.value === 'custom') {
+                customStructureGroup.style.display = 'block';
+            } else {
+                customStructureGroup.style.display = 'none';
+            }
+        });
+
+        // Show/hide custom intensity field
+        intensitySelect.addEventListener('change', () => {
+            if (intensitySelect.value === 'custom') {
+                customIntensityGroup.style.display = 'block';
+            } else {
+                customIntensityGroup.style.display = 'none';
+            }
+        });
+
+        // Generate button
+        generateBtn.addEventListener('click', async () => {
+            const theme = themeTextarea.value.trim();
+            if (!theme) {
+                alert('Veuillez entrer un thème ou message.');
+                return;
+            }
+
+            const structure = structureSelect.value;
+            const intensity = intensitySelect.value;
+
+            // Check if custom structure is selected and has a value
+            if (structure === 'custom') {
+                const customStructureValue = customStructureTextarea.value.trim();
+                if (!customStructureValue) {
+                    alert('Veuillez décrire votre structure personnalisée.');
+                    return;
+                }
+            }
+
+            // Check if custom intensity is selected and has a value
+            if (intensity === 'custom') {
+                const customIntensityValue = customIntensityTextarea.value.trim();
+                if (!customIntensityValue) {
+                    alert('Veuillez décrire votre intensité émotionnelle personnalisée.');
+                    return;
+                }
+            }
+
+            const structureMap = {
+                'standard': '[Intro] (4 bars)\n[Verse 1] (16 bars)\n[Hook] (4 bars) x2\n[Verse 2] (16 bars)\n[Hook] (4 bars) x2\n[Verse 3] (16 bars)\n[Hook] (4 bars) x2\n[Outro]',
+                'classic_bridge': '[Intro] (4-8 bars)\n[Verse 1] (16 bars)\n[Hook] (4-8 bars)\n[Verse 2] (16 bars)\n[Hook] (4-8 bars)\n[Bridge] (8 bars)\n[Verse 3] (16 bars)\n[Hook] (4-8 bars)\n[Outro]',
+                'two_verse': '[Intro] (4-8 bars)\n[Verse 1] (16 bars)\n[Hook] (4-8 bars) x2\n[Verse 2] (16 bars)\n[Hook] (4-8 bars) x2\n[Bridge] (8 bars)\n[Outro]',
+                'extended': '[Intro] (4 bars)\n[Verse 1] (16 bars)\n[Pre-Hook] (4 bars)\n[Hook] (8 bars)\n[Verse 2] (16 bars)\n[Pre-Hook] (4 bars)\n[Hook] (8 bars)\n[Verse 3] (16 bars)\n[Pre-Hook] (4 bars)\n[Hook] (8 bars)\n[Outro]',
+                'storytelling': '[Intro] (4-8 bars)\n[Verse 1] (16 bars)\n[Hook] (4-8 bars)\n[Verse 2] (16 bars)\n[Interlude] (4 bars)\n[Verse 3] (16 bars)\n[Hook] (4-8 bars)\n[Outro]',
+                'minimal': '[Verse 1] (16 bars)\n[Hook] (4-8 bars) x2\n[Verse 2] (16 bars)\n[Hook] (4-8 bars) x2\n[Outro]',
+                'three_act': '[Intro] (4 bars)\n[Verse 1] (16 bars)\n[Hook] (4-8 bars)\n[Verse 2] (16 bars)\n[Bridge] (8 bars)\n[Verse 3] (16 bars)\n[Hook] (4-8 bars) x2\n[Outro]',
+                'anthem': '[Intro] (4 bars)\n[Hook] (8 bars)\n[Verse 1] (16 bars)\n[Hook] (8 bars)\n[Verse 2] (16 bars)\n[Bridge] (8 bars)\n[Hook] (8 bars) x2\n[Outro]',
+                'aggressive': '[Intro] (4 bars)\n[Verse 1] (16 bars)\n[Hook] (4-8 bars)\n[Verse 2] (16 bars)\n[Hook] (4-8 bars)\n[Verse 3] (16 bars)\n[Bridge] (8 bars)\n[Hook] (4-8 bars)\n[Outro]',
+                'melodic': '[Intro] (4 bars)\n[Pre-Hook] (4 bars)\n[Hook] (8 bars)\n[Verse 1] (16 bars)\n[Pre-Hook] (4 bars)\n[Hook] (8 bars)\n[Bridge] (8 bars)\n[Hook] (8 bars)\n[Outro]',
+                'custom': customStructureTextarea.value.trim()
+            };
+
+            const intensityMap = {
+                'vulnerable': 'Ton vulnérable et fragile, émotions à vif exposées, authenticité brute sans défense, intimité personnelle.',
+                'melancholic': 'Ton mélancolique et introspectif profond, tristesse contemplative, douleur personnelle explorée avec lucidité.',
+                'nostalgic': 'Ton nostalgique et réfléchi, regard sur le passé, souvenirs qui pèsent, leçons apprises dans la douleur.',
+                'contemplative': 'Ton contemplatif et philosophique, analyse lucide de la vie, sagesse durement acquise, réflexions profondes.',
+                'somber': 'Ton sombre et pesant, lourdeur émotionnelle, réalités difficiles, atmosphère oppressante.',
+                'determined': 'Ton déterminé et résolu, force tranquille implacable, volonté d\'acier, résilience ancrée profondément.',
+                'hopeful': 'Ton porteur d\'espoir et optimiste, lumière dans l\'obscurité, foi en l\'avenir malgré les épreuves.',
+                'balanced': 'Ton équilibré entre introspection calme et montée progressive vers l\'intensité, voyage émotionnel complet.',
+                'confident': 'Ton confiant et affirmé, assurance tranquille, maîtrise de soi, autorité naturelle sans arrogance.',
+                'intense': 'Ton intense et passionné, émotions fortes débordantes, conviction profonde, énergie concentrée qui transperce.',
+                'rebellious': 'Ton rebelle et contestataire, refus du statu quo, esprit libre, remise en question audacieuse du système.',
+                'aggressive': 'Ton agressif et militant, appel direct au combat, résistance active, dénonciation sans compromis.',
+                'defiant': 'Ton défiant et provocateur, confrontation directe, courage face à l\'adversité, insoumission totale.',
+                'raw': 'Ton brute et explosive, rage contrôlée prête à exploser, vérité crue sans filtre, intensité viscérale.',
+                'rage': 'Ton de rage pure et déchaînée, colère libérée sans retenue, fureur contre l\'injustice, cri primal.',
+                'triumphant': 'Ton triomphant et victorieux, célébration de la résilience, fierté du chemin parcouru, force conquise.',
+                'custom': customIntensityTextarea.value.trim()
+            };
+
+            let userPrompt = `Thème/Message: ${theme}\n\n`;
+            userPrompt += `Structure de la chanson:\n${structureMap[structure]}\n\n`;
+            userPrompt += `Intensité émotionnelle: ${intensityMap[intensity]}\n\n`;
+            userPrompt += `Génère IMMÉDIATEMENT les paroles complètes dans le style exact de L'Oppresseur avec la structure spécifiée ci-dessus. 
+
+IMPORTANT - MÉTA-TAGS SUNO OBLIGATOIRES:
+- Place TOUJOURS un tag de structure + tags vocaux/ambiance au début de CHAQUE section
+- Format: [Structure | style vocal | ambiance | instrumentation]
+- Exemple: [Verse 1 | raspy lead vocal | close-mic intimacy | boom bap drums]
+- Exemple: [Hook | anthemic chorus | staccato flow | deep 808s]
+- Utilise 2-4 tags par section maximum
+- Tags vocaux pour rap conscient: raspy lead vocal, spoken word verse, emotional build-up, raw delivery, close-mic intimacy, staccato flow
+- Tags ambiance: light reverb, vocal grit, urban atmosphere, cold piano sample, boom bap drums, deep 808s
+
+CRITIQUE - 100% FRANÇAIS DANS LES PAROLES:
+- AUCUN mot anglais dans les paroles (pas de hood, block, grind, survive, gang, flex, hustle, etc.)
+- Utilise uniquement du français québécois authentique: quartier, coin de rue, trimé/trimé dur, survivre, crew/bande, arrondissement, rue, asphalte, etc.
+- Reste fidèle au français même pour les concepts urbains
+
+Utilise la méthode d'écriture L'Oppresseur : brut, authentique, français québécois colloquial SANS JURONS et SANS ANGLICISMES (reste puissant par le message et les métaphores en français pur), RIMES ÉQUILIBRÉES (mix de rimes simples percutantes + touches multisyllabiques aux moments clés - authenticité > virtuosité), flow 8-12 syllabes par ligne. CAPS pour emphasis explosive. Message lourd de sens. 100% original, zéro plagiat.`;
+
+            // Show loading
+            generateBtn.disabled = true;
+            output.textContent = '';
+            loading.style.display = 'block';
+            copyAllBtn.style.display = 'none';
+            styleTag.style.display = 'none';
+            copyStyleBtn.style.display = 'none';
+
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 120000); // 120s safety timeout
+
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        systemPrompt,
+                        userPrompt
+                    }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeout);
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`API error (${response.status}): ${errText}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.text) {
+                    const fullText = data.text;
+                    
+                    // Split lyrics and style tag - looking for "Style musical détaillé Suno"
+                    const parts = fullText.split(/Style musical détaillé Suno\s*:/i);
+                    const lyrics = parts[0].trim();
+                    let style = parts[1] ? parts[1].trim() : '';
+
+                    // If no style was generated, create one based on intensity
+                    if (!style) {
+                        style = generateSunoStyle(intensity);
+                    } else {
+                        // Enhance existing style with intensity-specific elements
+                        style = enhanceSunoStyle(style, intensity);
+                    }
+
+                    output.textContent = lyrics;
+                    copyAllBtn.style.display = 'block';
+
+                    if (style) {
+                        styleTag.textContent = `Style musical détaillé Suno : ${style}`;
+                        styleTag.style.display = 'block';
+                        copyStyleBtn.style.display = 'block';
+                    }
+                } else {
+                    output.textContent = 'Erreur lors de la génération. Veuillez réessayer.';
+                }
+
+        // Function to generate Suno style based on intensity
+        function generateSunoStyle(intensity) {
+            const baseStyle = "French Canadian Québec accent, male vocals, dark conscious Quebec rap, 90s boom bap, gritty raw production, cold piano samples";
+            
+            const intensityStyles = {
+                'vulnerable': `${baseStyle}, soft intimate delivery, vulnerable tone, minimal beats, gentle reverb, close-mic whisper, emotional fragility, stripped-down production, high fidelity`,
+                'melancholic': `${baseStyle}, melancholic delivery, sorrowful tone, slow tempo, deep emotional resonance, icy string pads, moody atmosphere, introspective, high fidelity`,
+                'nostalgic': `${baseStyle}, reflective delivery, nostalgic tone, mid-tempo, warm vinyl crackle, vintage samples, contemplative atmosphere, high fidelity`,
+                'contemplative': `${baseStyle}, thoughtful delivery, philosophical tone, measured tempo, ambient pads, spacious mix, meditative atmosphere, high fidelity`,
+                'somber': `${baseStyle}, heavy delivery, dark tone, slow brooding tempo, deep 808s, oppressive atmosphere, dense reverb, weighty, high fidelity`,
+                'determined': `${baseStyle}, steady confident delivery, resolute tone, driving beat, strong kick-snare, building intensity, focused energy, high fidelity`,
+                'hopeful': `${baseStyle}, uplifting delivery, hopeful tone, mid-tempo, bright piano notes, warm pads, inspiring atmosphere, light reverb, high fidelity`,
+                'balanced': `${baseStyle}, dynamic delivery, balanced emotional arc, tempo shifts, varied intensity, progressive build-up, complete emotional journey, high fidelity`,
+                'confident': `${baseStyle}, assertive delivery, self-assured tone, strong beat, punchy drums, clear vocal presence, commanding energy, high fidelity`,
+                'intense': `${baseStyle}, passionate delivery, intense emotional tone, energetic tempo, heavy 808s, powerful presence, visceral energy, high fidelity`,
+                'rebellious': `${baseStyle}, defiant delivery, rebellious tone, aggressive tempo, distorted elements, raw edge, confrontational energy, high fidelity`,
+                'aggressive': `${baseStyle}, militant delivery, aggressive tone, hard-hitting beat, deep modern 808s, explosive energy, confrontational, raw no auto-tune, high fidelity`,
+                'defiant': `${baseStyle}, challenging delivery, provocative tone, intense tempo, abrasive textures, unapologetic presence, bold energy, high fidelity`,
+                'raw': `${baseStyle}, explosive delivery, raw unfiltered tone, staccato attacks, brutal honesty, visceral intensity, unpolished edge, raw no auto-tune, high fidelity`,
+                'rage': `${baseStyle}, furious delivery, rage-filled tone, fast aggressive tempo, pounding 808s, chaotic energy, primal intensity, explosive choruses, raw no auto-tune, high fidelity`,
+                'triumphant': `${baseStyle}, victorious delivery, triumphant tone, anthemic energy, powerful drums, soaring atmosphere, celebratory intensity, explosive choruses, high fidelity`
+            };
+            
+            return intensityStyles[intensity] || intensityStyles['balanced'];
+        }
+
+        // Function to enhance existing style with intensity elements
+        function enhanceSunoStyle(existingStyle, intensity) {
+            // Add intensity-specific descriptors to enhance the style
+            const intensityEnhancements = {
+                'vulnerable': ', soft intimate delivery, vulnerable tone, gentle reverb',
+                'melancholic': ', melancholic delivery, sorrowful tone, deep emotional resonance',
+                'nostalgic': ', reflective delivery, nostalgic tone, warm vintage feel',
+                'contemplative': ', thoughtful delivery, philosophical tone, spacious meditative mix',
+                'somber': ', heavy delivery, dark oppressive tone, weighty atmosphere',
+                'determined': ', steady confident delivery, resolute driving tone',
+                'hopeful': ', uplifting delivery, hopeful inspiring tone',
+                'balanced': ', dynamic delivery with balanced emotional arc',
+                'confident': ', assertive delivery, self-assured commanding tone',
+                'intense': ', passionate delivery, intense visceral energy',
+                'rebellious': ', defiant delivery, rebellious confrontational edge',
+                'aggressive': ', militant delivery, aggressive explosive energy',
+                'defiant': ', challenging delivery, provocative unapologetic tone',
+                'raw': ', explosive delivery, raw unfiltered brutal tone',
+                'rage': ', furious delivery, rage-filled primal intensity',
+                'triumphant': ', victorious delivery, triumphant anthemic energy'
+            };
+            
+            const enhancement = intensityEnhancements[intensity] || '';
+            return existingStyle + enhancement;
+        }
+            } catch (error) {
+                output.textContent = `Erreur: ${error.message}`;
+                console.error('Error:', error);
+            } finally {
+                loading.style.display = 'none';
+                generateBtn.disabled = false;
+            }
+        });
+
+        // Copy buttons
+        copyAllBtn.addEventListener('click', () => {
+            // Copy just the lyrics (not the style tag)
+            navigator.clipboard.writeText(output.textContent);
+            const originalText = copyAllBtn.textContent;
+            copyAllBtn.textContent = '✓ Copié!';
+            setTimeout(() => {
+                copyAllBtn.textContent = originalText;
+            }, 2000);
+        });
+
+        copyStyleBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(styleTag.textContent);
+            const originalText = copyStyleBtn.textContent;
+            copyStyleBtn.textContent = '✓ Copié!';
+            setTimeout(() => {
+                copyStyleBtn.textContent = originalText;
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
